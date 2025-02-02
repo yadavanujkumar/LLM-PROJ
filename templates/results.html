@@ -1,0 +1,67 @@
+<!-- templates/results.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-12">
+    <h2>Query Results</h2>
+    <p><strong>Query:</strong> {{ query }}</p>
+    <div class="row">
+      {% for model, response in responses.items() %}
+      <div class="col-md-4 mb-3">
+        <div class="card">
+          <div class="card-header bg-secondary text-white">
+            {{ model }}
+          </div>
+          <div class="card-body">
+            <p>{{ response }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <h3>Response Comparison</h3>
+    <canvas id="scoreChart" width="400" height="200"></canvas>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  (function(){
+    // Parse the scores JSON passed from the backend
+    const chartScores = "{{ scores | safe }}";
+    const labels = Object.keys(chartScores);
+    const data = Object.values(chartScores);
+
+    const ctx = document.getElementById('scoreChart').getContext('2d');
+    const scoreChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Similarity Score',
+          data: data,
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 1
+          }
+        }
+      }
+    });
+  })();
+</script>
+{% endblock %}
